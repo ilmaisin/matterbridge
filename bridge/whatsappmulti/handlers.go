@@ -59,6 +59,7 @@ func (b *Bwhatsapp) handleTextMessage(messageInfo types.MessageInfo, msg *proto.
 	}
 
 	var text string
+	var parent string
 
 	// nolint:nestif
 	if msg.GetExtendedTextMessage() == nil {
@@ -83,6 +84,10 @@ func (b *Bwhatsapp) handleTextMessage(messageInfo types.MessageInfo, msg *proto.
 				text = strings.Replace(text, "@"+numberAndSuffix[0], "@"+mention, 1)
 			}
 		}
+
+		if ci.StanzaId != nil {
+			parent = *ci.StanzaId
+		}
 	}
 
 	rmsg := config.Message{
@@ -93,8 +98,8 @@ func (b *Bwhatsapp) handleTextMessage(messageInfo types.MessageInfo, msg *proto.
 		Account:  b.Account,
 		Protocol: b.Protocol,
 		Extra:    make(map[string][]interface{}),
-		//      ParentID: TODO, // TODO handle thread replies  // map from Info.QuotedMessageID string
-		ID: messageInfo.ID,
+		ParentID: parent,
+		ID:       messageInfo.ID,
 	}
 
 	if avatarURL, exists := b.userAvatars[senderJID.String()]; exists {
@@ -119,6 +124,11 @@ func (b *Bwhatsapp) handleImageMessage(msg *events.Message) {
 		senderJID = types.NewJID(ci.GetParticipant(), types.DefaultUserServer)
 	}
 
+	var parent string
+	if ci.StanzaId != nil {
+		parent = *ci.StanzaId
+	}
+
 	rmsg := config.Message{
 		UserID:   senderJID.String(),
 		Username: senderName,
@@ -127,6 +137,7 @@ func (b *Bwhatsapp) handleImageMessage(msg *events.Message) {
 		Protocol: b.Protocol,
 		Extra:    make(map[string][]interface{}),
 		ID:       msg.Info.ID,
+		ParentID: parent,
 	}
 
 	if avatarURL, exists := b.userAvatars[senderJID.String()]; exists {
@@ -182,6 +193,11 @@ func (b *Bwhatsapp) handleVideoMessage(msg *events.Message) {
 		senderJID = types.NewJID(ci.GetParticipant(), types.DefaultUserServer)
 	}
 
+	var parent string
+	if ci.StanzaId != nil {
+		parent = *ci.StanzaId
+	}
+
 	rmsg := config.Message{
 		UserID:   senderJID.String(),
 		Username: senderName,
@@ -190,6 +206,7 @@ func (b *Bwhatsapp) handleVideoMessage(msg *events.Message) {
 		Protocol: b.Protocol,
 		Extra:    make(map[string][]interface{}),
 		ID:       msg.Info.ID,
+		ParentID: parent,
 	}
 
 	if avatarURL, exists := b.userAvatars[senderJID.String()]; exists {
@@ -238,6 +255,11 @@ func (b *Bwhatsapp) handleAudioMessage(msg *events.Message) {
 	if senderJID == (types.JID{}) && ci.Participant != nil {
 		senderJID = types.NewJID(ci.GetParticipant(), types.DefaultUserServer)
 	}
+	
+	var parent string
+	if ci.StanzaId != nil {
+		parent = *ci.StanzaId
+	}
 
 	rmsg := config.Message{
 		UserID:   senderJID.String(),
@@ -247,6 +269,7 @@ func (b *Bwhatsapp) handleAudioMessage(msg *events.Message) {
 		Protocol: b.Protocol,
 		Extra:    make(map[string][]interface{}),
 		ID:       msg.Info.ID,
+		ParentID: parent,
 	}
 
 	if avatarURL, exists := b.userAvatars[senderJID.String()]; exists {
@@ -270,7 +293,7 @@ func (b *Bwhatsapp) handleAudioMessage(msg *events.Message) {
 
 	data, err := b.wc.Download(imsg)
 	if err != nil {
-		b.Log.Errorf("Download video failed: %s", err)
+		b.Log.Errorf("Download audio failed: %s", err)
 
 		return
 	}
@@ -296,6 +319,11 @@ func (b *Bwhatsapp) handleDocumentMessage(msg *events.Message) {
 		senderJID = types.NewJID(ci.GetParticipant(), types.DefaultUserServer)
 	}
 
+	var parent string
+	if ci.StanzaId != nil {
+		parent = *ci.StanzaId
+	}
+
 	rmsg := config.Message{
 		UserID:   senderJID.String(),
 		Username: senderName,
@@ -304,6 +332,7 @@ func (b *Bwhatsapp) handleDocumentMessage(msg *events.Message) {
 		Protocol: b.Protocol,
 		Extra:    make(map[string][]interface{}),
 		ID:       msg.Info.ID,
+		ParentID: parent,
 	}
 
 	if avatarURL, exists := b.userAvatars[senderJID.String()]; exists {
