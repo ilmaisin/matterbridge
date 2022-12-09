@@ -59,7 +59,7 @@ func (b *Bwhatsapp) handleTextMessage(messageInfo types.MessageInfo, msg *proto.
 	}
 
 	var text string
-	var parent string
+	var parent string = ""
 
 	// nolint:nestif
 	if msg.GetExtendedTextMessage() == nil {
@@ -124,8 +124,8 @@ func (b *Bwhatsapp) handleImageMessage(msg *events.Message) {
 		senderJID = types.NewJID(ci.GetParticipant(), types.DefaultUserServer)
 	}
 
-	var parent string
-	if ci.StanzaId != nil {
+	var parent string = ""
+	if ci != nil && ci.StanzaId != nil {
 		parent = *ci.StanzaId
 	}
 
@@ -193,8 +193,8 @@ func (b *Bwhatsapp) handleVideoMessage(msg *events.Message) {
 		senderJID = types.NewJID(ci.GetParticipant(), types.DefaultUserServer)
 	}
 
-	var parent string
-	if ci.StanzaId != nil {
+	var parent string = ""
+	if ci != nil && ci.StanzaId != nil {
 		parent = *ci.StanzaId
 	}
 
@@ -256,8 +256,8 @@ func (b *Bwhatsapp) handleAudioMessage(msg *events.Message) {
 		senderJID = types.NewJID(ci.GetParticipant(), types.DefaultUserServer)
 	}
 	
-	var parent string
-	if ci.StanzaId != nil {
+	var parent string = ""
+	if ci != nil && ci.StanzaId != nil {
 		parent = *ci.StanzaId
 	}
 
@@ -319,8 +319,8 @@ func (b *Bwhatsapp) handleDocumentMessage(msg *events.Message) {
 		senderJID = types.NewJID(ci.GetParticipant(), types.DefaultUserServer)
 	}
 
-	var parent string
-	if ci.StanzaId != nil {
+	var parent string = ""
+	if ci != nil && ci.StanzaId != nil {
 		parent = *ci.StanzaId
 	}
 
